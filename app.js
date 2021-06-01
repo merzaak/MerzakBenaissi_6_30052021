@@ -1,9 +1,11 @@
 //importations
 const express = require('express') 
-const bodyParser = require('body-parser') 
 const mongoose = require('mongoose') 
 
 const app = express() //création d'une application express
+
+//importation des routers user
+const userRoute = require('./routes/userRoutes')
 
 //connection de notre API à la base de donnée MangoDB grâce au package mangoose
 mongoose.connect('mongodb+srv://merzaak:16111989.Hec@cluster0.rxhzi.mongodb.net/PekockoDB?retryWrites=true&w=majority',
