@@ -7,6 +7,8 @@
 */
 const bcrypt = require('bcrypt') 
 
+//importation du package jsonwebtoken
+const jsonWebToken = require('jsonwebtoken')
 
 //importation du model User
 const User = require('../models/userModel') 
@@ -53,7 +55,11 @@ exports.login = (req, res, next) =>{
           //si le mot de passe est bon, on lui renvoie son userId et le TOKEN
           res.status(200).json({
             userId: user._id,
-            token: 'token'
+            token: jsonWebToken.sign(
+              {userId : user._id}, //les données qu'on veut encoder 
+              process.env.ACCESS_TOKEN_SECRET, //l'expression de token
+              {expiresIn : '24h'} //temps de validité de token
+            )
           }) 
         })
         .catch(error => res.status(500).json({ error })) 

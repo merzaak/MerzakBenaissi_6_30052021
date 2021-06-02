@@ -1,6 +1,8 @@
 //importations
 const express = require('express') 
 const mongoose = require('mongoose') 
+const bodyParser = require('body-parser') 
+require('dotenv').config({path: './.env'})
 
 const app = express() //création d'une application express
 
@@ -8,14 +10,14 @@ const app = express() //création d'une application express
 const userRoute = require('./routes/userRoutes')
 
 //connection de notre API à la base de donnée MangoDB grâce au package mangoose
-mongoose.connect('mongodb+srv://merzaak:16111989.Hec@cluster0.rxhzi.mongodb.net/PekockoDB?retryWrites=true&w=majority',
+mongoose.connect('mongodb+srv://' + process.env.DB_USER_PASS + '@cluster0.rxhzi.mongodb.net/PekockoDB?retryWrites=true&w=majority',
   { useNewUrlParser: true,
     useUnifiedTopology: true,
     useCreateIndex: true,
     useFindAndModify: false 
-    })
-  .then(() => console.log('Connexion à MongoDB réussie !'))
-  .catch((err) => console.log('Connexion à MongoDB échouée !', err))
+})
+    .then(() => console.log('Connexion à MongoDB réussie !'))
+    .catch((err) => console.log('Connexion à MongoDB échouée !', err))
 
 //CORS 
 app.use((req, res, next) => { 
@@ -28,8 +30,11 @@ app.use((req, res, next) => {
     next()
 })
 
-app.use((req, res) => {
-   res.json({ message: 'Votre requête a bien été reçue !' }); 
-});
+//pour transformer le corps de la requête en objet javascript utilisable
+app.use(bodyParser.json())
+
+
+//les routes user
+app.use('/api/auth', userRoute)
 
 module.exports = app;
