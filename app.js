@@ -37,4 +37,4 @@ app.use(bodyParser.json())
 //les routes user
 app.use('/api/auth', userRoute)
 
-module.exports = app;
+module.exports = app
