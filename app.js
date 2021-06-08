@@ -6,8 +6,9 @@ require('dotenv').config({path: './.env'})
 
 const app = express() //création d'une application express
 
-//importation des routers user
+//importation des routers user et sauce
 const userRoute = require('./routes/userRoutes')
+const sauceRoute = require('./routes/sauceRoutes')
 
 //connection de notre API à la base de donnée MangoDB grâce au package mangoose
 mongoose.connect('mongodb+srv://' + process.env.DB_USER_PASS + '@cluster0.rxhzi.mongodb.net/PekockoDB?retryWrites=true&w=majority',
@@ -36,5 +37,7 @@ app.use(bodyParser.json())
 
 //les routes user
 app.use('/api/auth', userRoute)
+//les routes sauces
+app.use('/api/sauces', sauceRoute)
 
 module.exports = app
