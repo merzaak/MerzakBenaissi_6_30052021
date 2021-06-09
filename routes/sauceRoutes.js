@@ -3,11 +3,12 @@
 //importations 
 const express = require('express')
 const router = express.Router() // la methode Router d'express
+const multer  = require('../middleware/multer')
 
 //importer les controllers  et l'authentification
 const sauceCtrl = require('../controllers/sauceCtrl')
 const auth = require('../middleware/auth')
-const multer  = require('../middleware/multer')
+
 
 
 //les routes Sauce
@@ -16,7 +17,7 @@ router.get('/', auth, sauceCtrl.getAllSauce )
 router.get('/:id', auth, sauceCtrl.getOneSauce )
 router.put('/:id', auth, multer, sauceCtrl.updateSauce )
 router.delete('/:id', auth, sauceCtrl.deleteSauce )
-router.patch('/:id/like', auth, sauceCtrl.likeSauce )
+router.post('/:id/like', auth, sauceCtrl.likeSauce )
 
 //on exporte notre router
 module.exports = router

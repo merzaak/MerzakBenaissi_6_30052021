@@ -23,10 +23,10 @@ module.exports = (req, res, next) => {
         //sinon, si tout va bien, on peut passer la requete au prochain middleware
         next() 
       }
-    } catch {
+    } catch (err) {
       res.status(401).json({ 
         //si en reçoit une erreur on va l'envoyer, sinon on créer une nouvelle erreur 
-        error: error || new Error('requête non authentifiée!')
+        err: err || new Error('requête non authentifiée!')
       }) 
     }
 } 

@@ -3,6 +3,7 @@ const express = require('express')
 const mongoose = require('mongoose') 
 const bodyParser = require('body-parser') 
 require('dotenv').config({path: './.env'})
+const path = require('path')
 
 const app = express() //création d'une application express
 
@@ -34,7 +35,8 @@ app.use((req, res, next) => {
 //pour transformer le corps de la requête en objet javascript utilisable
 app.use(bodyParser.json())
 
-
+//middleware pour gérer les images
+app.use('/images', express.static(path.join(__dirname,'images')))
 //les routes user
 app.use('/api/auth', userRoute)
 //les routes sauces

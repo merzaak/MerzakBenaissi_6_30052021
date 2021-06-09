@@ -5,16 +5,16 @@ const multer = require('multer')
 
 //dictionnaires des extenstions images
 const MIME_TYPES = {
-    'image/jpg' : 'jpg',
-    'image/jpeg' : 'jpg',
-    'image/png' : 'png'
+    'image/jpg': 'jpg',
+    'image/jpeg': 'jpg',
+    'image/png': 'png'
 }
 
 //création d'un objet pour la configuration du multer
 const storage = multer.diskStorage({
-    //dans quel dossier enregistrer les fichiers 
+    //dans quel dossier enregistrer les fichiers ?
     destination: (req, file, callback) => {
-        callback(null, 'images' )
+        callback(null, 'images')
     },
     //quel nom de fichier utiliser
     filename: (req, file, callback) => {
@@ -23,10 +23,10 @@ const storage = multer.diskStorage({
         const name = file.originalname.split(' ').join('_')
         //application d'une extenstion aux fichiers
         const extenstion = MIME_TYPES[file.mimetype]
-        //on créer le nomdu fichier complet
+        //on créer le nom du fichier complet
         callback(null, name + Date.now() + '.' + extenstion)
     }
 })
 
 //on exporte notre middleware
-module.exports = multer({storage}).single('image')
+module.exports = multer({storage: storage}).single('image')
