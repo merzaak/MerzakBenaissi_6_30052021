@@ -3,6 +3,7 @@
 //importations
 const Sauce = require('../models/sauceModel')
 const fs = require('fs')
+const ObjectID = require('mongoose').Types.ObjectId
 
 //fonction pour créer une sauce
 module.exports.createSauce = async (req, res) => {
@@ -57,9 +58,9 @@ module.exports.updateSauce = (req, res) => {
     {
         ...JSON.parse(req.body.sauce),
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+        
     } : {...req.body}
-    //1er arg : ancien objet correspond à l'id
-    //2er arg le nouvel objet modifié
+   
     Sauce.updateOne({_id: req.params.id}, {...sauceObject, _id: req.params.id})
     //ça nous retourne une promisse
     .then(() => res.status(200).json({message: " votre sauce a bien été modifiée"}))
@@ -85,7 +86,71 @@ module.exports.deleteSauce = (req, res) => {
 }
 
 //fonction pour liker ou disliker une seule sauce
-module.exports.likeSauce = (req, res) => {
-    console.log(req.body);
+module.exports.likeSauce = async (req, res) => {
+    const userId = req.body.userId
+ 
+    try { 
+        //ajouter un like
+        if(req.body.like === 1) {
+            await Sauce.findByIdAndUpdate(
+                req.params.id, // on récupère notre id
+                {
+                    $inc: {likes: 1}, //on incrémente la valeur des likes
+                    $addToSet: {usersLiked: userId} //on ajoute l'id de l'user qui a liké au tableau des usersliked
+                }, 
+                {new: true}
+            )
+            console.log("un nouveau like");
+            return res.json({message: "sauce likée"})       
+        } 
+        //ajouter un dislike
+        else if (req.body.like === -1) {
+            await Sauce.findByIdAndUpdate(
+                req.params.id,
+                {
+                    $inc: {dislikes: 1},
+                    $addToSet: {usersDisliked: req.body.userId}
+                },
+                {new : true}
+            )
+            console.log("nouveau dislike")
+            return res.json({message: "sauce likée"}) 
+                
+        } 
+        //retirer un like ou un dislike
+        else if (req.body.like === 0 ) {
+            //on récupère l'objet sauce qui correspond à l'id
+            const sauce =  await Sauce.findOne({
+                _id : req.params.id
+            })
+            //si on a liké, on retire le like
+            if(sauce.usersLiked.includes(req.body.userId)) {
+                await Sauce.findByIdAndUpdate(
+                    req.params.id, 
+                    {
+                        $inc: {likes: -1}, 
+                        $pull: {usersLiked: req.body.userId}
+                    }, 
+                    {new: true}
+                )
+                console.log("like retiré")
+                return res.json({message: "like retiré"})
+            }  
+            //si on a disliké, on retire le dislike
+            else if(sauce.usersDisliked.includes(req.body.userId)) {
+                await Sauce.findByIdAndUpdate(
+                    req.params.id, 
+                    {
+                        $inc: {dislikes: -1},
+                        $pull: {usersDisliked: req.body.userId},
+                    }, 
+                    {new: true}
+                )
+            }
+            console.log("dislike retiré")
+            return res.json({message: "dislike retiré"}) 
+        }
+    } catch (err) {
+        return res.status(500).json({message: err})
+    }
 }
-
