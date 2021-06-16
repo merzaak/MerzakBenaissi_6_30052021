@@ -12,7 +12,7 @@ const userRoute = require('./routes/userRoutes')
 const sauceRoute = require('./routes/sauceRoutes')
 
 //connection de notre API à la base de donnée MangoDB grâce au package mangoose
-mongoose.connect('mongodb+srv://' + process.env.DB_USER_PASS + '@cluster0.rxhzi.mongodb.net/PekockoDB?retryWrites=true&w=majority',
+mongoose.connect(process.env.DB_USER_PASS,
   { useNewUrlParser: true,
     useUnifiedTopology: true,
     useCreateIndex: true,
