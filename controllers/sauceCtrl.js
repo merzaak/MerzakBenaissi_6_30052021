@@ -1,11 +1,13 @@
-/* ce fichier sert à crer les fonctions pour les différentes routes Sauce */
+/* ce fichier sert à creer les fonctions pour les différentes routes Sauce */
 
 //importations
 const Sauce = require('../models/sauceModel')
 const fs = require('fs')
 const ObjectID = require('mongoose').Types.ObjectId
 
+/************************************************************************************/
 //fonction pour créer une sauce
+/************************************************************************************/
 module.exports.createSauce = async (req, res) => {
     //on récupère les données envoyé par la requête frontend
     const sauceObject = JSON.parse(req.body.sauce)
@@ -27,33 +29,55 @@ module.exports.createSauce = async (req, res) => {
     catch(err) { return res.status(400).send(err) }  
 }
 
+/************************************************************************************/
 //fonction pour afficher toutes les sauces
-module.exports.getAllSauce = (req, res) => {
-    Sauce.find().then(
-        (sauces) => {
-            res.status(200).json(sauces)
-        })
-        .catch(
-            (err) => { res.status(400).json({err: err})}
-        )
+/************************************************************************************/
+module.exports.getAllSauce = async (req, res) => {
+    try {
+        const sauces = await Sauce.find()
+        res.status(200).json(sauces)
+    } catch (err) {
+        res.status(400).json({message: err.message})
+    }
 }
 
+/************************************************************************************/
 //fonction pour afficher une sauce
-module.exports.getOneSauce = (req, res) => {
-   Sauce.findOne ({
-       _id : req.params.id
-    }).then(
-       (sauce) => {
-           res.status(200).json(sauce)
-    }).catch(
-        (err) => {
-            res.status(404).json({err: err})
+/************************************************************************************/
+module.exports.getOneSauce = async (req, res) => {
+    //vérifier si l'id qu'on cherche exsiste dans la bdd
+    if (!ObjectID.isValid(req.params.id))
+        return res.status(400).send(`id inconnu: ${req.params.id}`)
+    //si il n y a pas de problème, on récupère les données de notre sauce
+    Sauce.findById(req.params.id,
+    (err, sauce) => {
+        if(!err) res.status(200).send(sauce)
+        else console.log(`id inconnu: ${err}`);
     })
 }
 
-//fonction pour mofifer une seule sauce
+/************************************************************************************/
+//fonction pour modifier une seule sauce
+/************************************************************************************/
 module.exports.updateSauce = (req, res) => {
-    //ternaire pour savoir si on a une image dans la modification ou non
+    //vérifier si l'id qu'on cherche exsiste dans la bdd
+    if (!ObjectID.isValid(req.params.id))
+    return res.status(400).send(`id inconnu: ${req.params.id}`)
+
+    //si on modifie l'image, on supprime d'abord l'ancienne image
+    if(req.file) {
+        Sauce.findOne({_id: req.params.id})
+        .then(sauce => {
+            //on extrait le nom de l'image
+            const filename = sauce.imageUrl.split('/images/')[1]
+            //on supprime le fichier grace au package fs
+            fs.unlink(`images/${filename}`, (err) => {
+                if(err) res.status(400).json({err})
+            })
+        })
+    }
+
+    //un ternaire pour voir s'il y a une image sans notre requete
     const sauceObject = req.file?
     {
         ...JSON.parse(req.body.sauce),
@@ -61,14 +85,20 @@ module.exports.updateSauce = (req, res) => {
         
     } : {...req.body}
    
+    //on envoie le nouvel objet avec les modifications
     Sauce.updateOne({_id: req.params.id}, {...sauceObject, _id: req.params.id})
-    //ça nous retourne une promisse
     .then(() => res.status(200).json({message: " votre sauce a bien été modifiée"}))
     .catch(err => res.status(400).json({err}))
 }
 
+/************************************************************************************/
 //fonction pour supprimer une seule sauce
+/************************************************************************************/
 module.exports.deleteSauce = (req, res) => {
+    //vérifier si l'id qu'on cherche exsiste dans la bdd
+    if (!ObjectID.isValid(req.params.id))
+    return res.status(400).send(`id inconnu: ${req.params.id}`)
+
     //on va d'abord cherher notre image
     Sauce.findOne({_id: req.params.id})
     .then(sauce => {
@@ -76,7 +106,7 @@ module.exports.deleteSauce = (req, res) => {
         const filename = sauce.imageUrl.split('/images/')[1]
         //on supprime le fichier grace au package fs
         fs.unlink(`images/${filename}`, () =>  {
-            //et on supprime tout l'objet avec une callback
+            //et on supprime tout l'objet avec un callback
             Sauce.deleteOne({_id: req.params.id})
             .then(() => res.status(200).json({message : "votre sauce a bien été supprimée"}))
             .catch(err => res.status(400).json({err}))
@@ -85,8 +115,14 @@ module.exports.deleteSauce = (req, res) => {
     .catch(err => res.status(500).json({err}))
 }
 
+/************************************************************************************/
 //fonction pour liker ou disliker une seule sauce
+/************************************************************************************/
 module.exports.likeSauce = async (req, res) => {
+    //vérifier si l'id qu'on cherche exsiste dans la bdd
+    if (!ObjectID.isValid(req.params.id))
+    return res.status(400).send(`id inconnu: ${req.params.id}`)
+
     const userId = req.body.userId
  
     try { 
