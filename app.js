@@ -1,5 +1,6 @@
 //importations
 const express = require('express') 
+const helmet =  require('helmet')
 const mongoose = require('mongoose') 
 const bodyParser = require('body-parser') 
 require('dotenv').config({path: './.env'})
@@ -34,6 +35,9 @@ app.use((req, res, next) => {
 
 //pour transformer le corps de la requête en objet javascript utilisable
 app.use(bodyParser.json())
+
+//ajoute de helmet
+app.use(helmet())
 
 //middleware pour gérer les images
 app.use('/images', express.static(path.join(__dirname,'images')))
