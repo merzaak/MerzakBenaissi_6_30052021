@@ -5,9 +5,9 @@ const Sauce = require('../models/sauceModel')
 const fs = require('fs')
 const ObjectID = require('mongoose').Types.ObjectId
 
-/************************************************************************************/
+/****************************************************************/
 //fonction pour créer une sauce
-/************************************************************************************/
+/***************************************************************/
 module.exports.createSauce = async (req, res) => {
     //on récupère les données envoyé par la requête frontend
     const sauceObject = JSON.parse(req.body.sauce)
@@ -29,9 +29,9 @@ module.exports.createSauce = async (req, res) => {
     catch(err) { return res.status(400).send(err) }  
 }
 
-/************************************************************************************/
+/****************************************************************/
 //fonction pour afficher toutes les sauces
-/************************************************************************************/
+/****************************************************************/
 module.exports.getAllSauce = async (req, res) => {
     try {
         const sauces = await Sauce.find()
@@ -41,9 +41,9 @@ module.exports.getAllSauce = async (req, res) => {
     }
 }
 
-/************************************************************************************/
+/****************************************************************/
 //fonction pour afficher une sauce
-/************************************************************************************/
+/***************************************************************/
 module.exports.getOneSauce = async (req, res) => {
     //vérifier si l'id qu'on cherche exsiste dans la bdd
     if (!ObjectID.isValid(req.params.id))
@@ -56,9 +56,9 @@ module.exports.getOneSauce = async (req, res) => {
     })
 }
 
-/************************************************************************************/
+/****************************************************************/
 //fonction pour modifier une seule sauce
-/************************************************************************************/
+/****************************************************************/
 module.exports.updateSauce = (req, res) => {
     //vérifier si l'id qu'on cherche exsiste dans la bdd
     if (!ObjectID.isValid(req.params.id))
@@ -91,9 +91,9 @@ module.exports.updateSauce = (req, res) => {
     .catch(err => res.status(400).json({err}))
 }
 
-/************************************************************************************/
+/****************************************************************/
 //fonction pour supprimer une seule sauce
-/************************************************************************************/
+/****************************************************************/
 module.exports.deleteSauce = (req, res) => {
     //vérifier si l'id qu'on cherche exsiste dans la bdd
     if (!ObjectID.isValid(req.params.id))
@@ -115,77 +115,87 @@ module.exports.deleteSauce = (req, res) => {
     .catch(err => res.status(500).json({err}))
 }
 
-/************************************************************************************/
+/****************************************************************/
 //fonction pour liker ou disliker une seule sauce
-/************************************************************************************/
+/****************************************************************/
 module.exports.likeSauce = async (req, res) => {
     //vérifier si l'id qu'on cherche exsiste dans la bdd
     if (!ObjectID.isValid(req.params.id))
     return res.status(400).send(`id inconnu: ${req.params.id}`)
 
     const userId = req.body.userId
- 
+    //on récupère l'objet sauce qui correspond à l'id
+    const sauce =  await Sauce.findOne({
+        _id : req.params.id
+    })
+
     try { 
-        //ajouter un like
-        if(req.body.like === 1) {
-            await Sauce.findByIdAndUpdate(
-                req.params.id, // on récupère notre id
-                {
-                    $inc: {likes: 1}, //on incrémente la valeur des likes
-                    $addToSet: {usersLiked: userId} //on ajoute l'id de l'user qui a liké au tableau des usersliked
-                }, 
-                {new: true}
-            )
-            console.log("un nouveau like");
-            return res.json({message: "sauce likée"})       
-        } 
-        //ajouter un dislike
-        else if (req.body.like === -1) {
-            await Sauce.findByIdAndUpdate(
-                req.params.id,
-                {
-                    $inc: {dislikes: 1},
-                    $addToSet: {usersDisliked: req.body.userId}
-                },
-                {new : true}
-            )
-            console.log("nouveau dislike")
-            return res.json({message: "sauce likée"}) 
+        //si l'user à déjà liké ou disliké
+        if(sauce.usersLiked.includes(req.body.userId) || sauce.usersDisliked.includes(req.body.userId) ) {
+
+            //on permet juste de retirer le like ou le dislike
+            if (req.body.like === 0 ) {
                 
-        } 
-        //retirer un like ou un dislike
-        else if (req.body.like === 0 ) {
-            //on récupère l'objet sauce qui correspond à l'id
-            const sauce =  await Sauce.findOne({
-                _id : req.params.id
-            })
-            //si on a liké, on retire le like
-            if(sauce.usersLiked.includes(req.body.userId)) {
-                await Sauce.findByIdAndUpdate(
-                    req.params.id, 
-                    {
-                        $inc: {likes: -1}, 
-                        $pull: {usersLiked: req.body.userId}
-                    }, 
-                    {new: true}
-                )
-                console.log("like retiré")
-                return res.json({message: "like retiré"})
-            }  
-            //si on a disliké, on retire le dislike
-            else if(sauce.usersDisliked.includes(req.body.userId)) {
-                await Sauce.findByIdAndUpdate(
-                    req.params.id, 
-                    {
-                        $inc: {dislikes: -1},
-                        $pull: {usersDisliked: req.body.userId},
-                    }, 
-                    {new: true}
-                )
+                //si on a liké, on retire le like
+                if(sauce.usersLiked.includes(req.body.userId)) {
+                    await Sauce.findByIdAndUpdate(
+                        req.params.id, 
+                        {
+                            $inc: {likes: -1}, 
+                            $pull: {usersLiked: req.body.userId}
+                        }, 
+                        {new: true}
+                    )
+                    console.log("like retiré")
+                    return res.json({message: "like retiré"})
+                }  
+                //si on a disliké, on retire le dislike
+                else if(sauce.usersDisliked.includes(req.body.userId)) {
+                    await Sauce.findByIdAndUpdate(
+                        req.params.id, 
+                        {
+                            $inc: {dislikes: -1},
+                            $pull: {usersDisliked: req.body.userId},
+                        }, 
+                        {new: true}
+                    )
+                }
+                console.log("dislike retiré")
+                return res.json({message: "dislike retiré"}) 
             }
-            console.log("dislike retiré")
-            return res.json({message: "dislike retiré"}) 
+
+        } 
+        //sinon, on permet d'ajouter un like ou un dislike
+        else {
+            //ajouter un like
+            if(req.body.like === 1) {
+                await Sauce.findByIdAndUpdate(
+                    req.params.id, // on récupère notre id
+                    {
+                        $inc: {likes: 1}, //on incrémente la valeur des likes
+                        $addToSet: {usersLiked: userId} //on ajoute l'id de l'user qui a liké au tableau des usersliked
+                    }, 
+                    {new: true}
+                )
+                console.log("un nouveau like");
+                return res.json({message: "sauce likée"})       
+            } 
+            //ajouter un dislike
+            else if (req.body.like === -1) {
+                await Sauce.findByIdAndUpdate(
+                    req.params.id,
+                    {
+                        $inc: {dislikes: 1},
+                        $addToSet: {usersDisliked: req.body.userId}
+                    },
+                    {new : true}
+                )
+                console.log("nouveau dislike")
+                return res.json({message: "sauce likée"}) 
+                    
+            } 
         }
+        
     } catch (err) {
         return res.status(500).json({message: err})
     }
