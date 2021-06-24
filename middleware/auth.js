@@ -21,6 +21,7 @@ module.exports = (req, res, next) => {
         throw 'user ID non valable' 
       } else {
         //sinon, si tout va bien, on peut passer la requete au prochain middleware
+        req.body.userIdFromToken = userId
         next() 
       }
     } catch (err) {

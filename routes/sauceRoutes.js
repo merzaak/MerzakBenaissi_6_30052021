@@ -9,15 +9,20 @@ const multer  = require('../middleware/multer')
 const sauceCtrl = require('../controllers/sauceCtrl')
 const auth = require('../middleware/auth')
 
+//importer les permissions
+const Sauce = require('../models/sauceModel')
+const User  = require('../models/userModel')
+const { authManageSauce} =  require('../middleware/permission')
 
 
 //les routes Sauce
 router.post('/', auth, multer, sauceCtrl.createSauce )
 router.get('/', auth, sauceCtrl.getAllSauce )
 router.get('/:id', auth, sauceCtrl.getOneSauce )
-router.put('/:id', auth, multer, sauceCtrl.updateSauce )
-router.delete('/:id', auth, sauceCtrl.deleteSauce )
+router.put('/:id', auth, authManageSauce, multer, sauceCtrl.updateSauce )
+router.delete('/:id', auth, authManageSauce, sauceCtrl.deleteSauce )
 router.post('/:id/like', auth, sauceCtrl.likeSauce )
+
 
 //on exporte notre router
 module.exports = router
