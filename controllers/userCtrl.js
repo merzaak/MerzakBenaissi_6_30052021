@@ -1,23 +1,26 @@
-/* ce fichier sert à crer les fonctions pour les différentes routes User */
+/* ce fichier sert à creer les fonctions pour les différentes routes User */
 
-//importation du package bcrypt
-/*
-// ce package  utilise un algorithme unidirectionnel pour 
-// chiffrer et créer un hash des mots de passe
-*/
+//importation
 const bcrypt = require('bcrypt') 
-
-//importation du package jsonwebtoken
 const jsonWebToken = require('jsonwebtoken')
+const Joi = require('joi')
 
-//importation du model User
 const User = require('../models/userModel') 
+const {validateInput} = require('../middleware/joiValidation')
 
-/*****************************************************************************************/
-///////////////////fonction pour la création d'un nouveau User/////////////////////////////
-/*****************************************************************************************/
-exports.signup = (req, res, next) =>{
-  //fonction pour hasher le mot de passe salé 10 fois
+
+/****************************************************************/
+///////////////////fonction pour la création d'un nouveau User////
+/****************************************************************/
+exports.signup = (req, res, next) => {
+
+  //on récupère les inputs parès validation par Joi
+  const result = validateInput.validate(req.body)
+  if(result.error) {
+    return res.status(400).send(result.error.details[0].message)
+  }
+
+  //on hashe le mot de passe 
     bcrypt.hash(req.body.password, 10) 
     //on crée l'utilisateur et on stock le hash à la place de mot de passe
     .then(hash => {

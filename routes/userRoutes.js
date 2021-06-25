@@ -1,16 +1,15 @@
-/* ce fichier sert à créer la logique de routing pour la création d'un User */
+/* ce fichier sert à créer la logique de routing pour la création et la connexion d'un User  */
 
-//importation d'express
+//importation
 const express = require('express')
-//on utilise la methode Router d'express
-const router = express.Router()
-
-//importer les controllers 
 const userCtrl = require('../controllers/userCtrl')
 
+const router = express.Router()
+
+
 //les routes user
-router.post('/signup', userCtrl.signup) //pour l'inscription
-router.post('/login', userCtrl.login) //pour la connexion
+router.post('/signup', userCtrl.signup) 
+router.post('/login', userCtrl.login) 
 
 //on exporte notre router
 module.exports = router

@@ -6,15 +6,8 @@ const uniqueValidator = require('mongoose-unique-validator')
 
 //création du model des données pour les utilisateurs
 const userSchema = mongoose.Schema({
-    email: { 
-        type: String, 
-        required: true,
-        unique: true // on peut pas avoir deux fois la même adresse mail
-    },
-    password: { 
-        type: String, 
-        required: true
-    }
+    email: { type: String, required: true,unique: true },
+    password: { type: String, required: true }
 })
 
 //application de unique validator à notre model
