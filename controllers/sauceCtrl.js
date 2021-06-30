@@ -1,12 +1,13 @@
 /* ce fichier sert à creer les fonctions pour les différentes routes Sauce */
 
 //importations
-const Sauce = require('../models/sauceModel')
 const fs = require('fs')
 const ObjectID = require('mongoose').Types.ObjectId
 
+const Sauce = require('../models/sauceModel')
+
 /****************************************************************/
-//fonction pour créer une sauce
+////////////// fonction pour créer une sauce ////////////////////
 /***************************************************************/
 module.exports.createSauce = async (req, res) => {
     //on récupère les données envoyé par la requête frontend
@@ -57,7 +58,7 @@ module.exports.getOneSauce = async (req, res) => {
 }
 
 /****************************************************************/
-//fonction pour modifier une seule sauce
+//////////// fonction pour modifier une seule sauce //////////////
 /****************************************************************/
 module.exports.updateSauce = (req, res) => {
     //vérifier si l'id qu'on cherche exsiste dans la bdd
@@ -92,7 +93,7 @@ module.exports.updateSauce = (req, res) => {
 }
 
 /****************************************************************/
-//fonction pour supprimer une seule sauce
+///////////// fonction pour supprimer une seule sauce ////////////
 /****************************************************************/
 module.exports.deleteSauce = (req, res) => {
     //vérifier si l'id qu'on cherche exsiste dans la bdd
@@ -116,7 +117,7 @@ module.exports.deleteSauce = (req, res) => {
 }
 
 /****************************************************************/
-//fonction pour liker ou disliker une seule sauce
+//////// fonction pour liker ou disliker une seule sauce /////////
 /****************************************************************/
 module.exports.likeSauce = async (req, res) => {
     //vérifier si l'id qu'on cherche exsiste dans la bdd

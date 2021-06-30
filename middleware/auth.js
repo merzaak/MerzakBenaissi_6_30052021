@@ -10,13 +10,13 @@ module.exports = (req, res, next) => {
     try {
       //on récupère les données d'authorization dans les headers de notres requête
       const authHeader = req.headers['authorization']
-      //on extrait le tokende notre authorization [bearer][token]
+      //on extrait le token de notre authorization [bearer, token]
       const token = authHeader.split(' ')[1] 
       //on va decoder le token et vérifier que le token correspond à la clé secrete
       const decodedToken = jsonWebToken.verify(token, process.env.ACCESS_TOKEN_SECRET) 
       //on récupère le userId qui été dans le token après l'avoir decoder
       const userId = decodedToken.userId 
-      //si le userId récupérer de la requete n'est pas le même que notre userId on envoie une erreur 
+      //si le userId récupéré de la requete n'est pas le même que notre userId on envoie une erreur 
       if (req.body.userId && req.body.userId !== userId) {
         throw 'user ID non valable' 
       } else {
