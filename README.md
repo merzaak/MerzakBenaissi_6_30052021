@@ -1,5 +1,5 @@
 
-# Project Title
+# SoPeckoko
 
 Projet 6 de la formation Developpement Web d'OpenClassrooms.
 il s'agit d'une API sécurisée pour une application d'avis gastronomiques
