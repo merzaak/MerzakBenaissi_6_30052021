@@ -1,5 +1,5 @@
 
-# Project Title
+# SoPeckoko
 
 Projet 6 de la formation Developpement Web d'OpenClassrooms.
 il s'agit d'une API sécurisée pour une application d'avis gastronomiques
@@ -24,7 +24,7 @@ sur votre machine.
 Pour exécuter ce projet, vous devrez ajouter les variables
 d'environnement suivantes à votre fichier .env
 
-`DB_USER_PASS` : qui est la clé de connexion à mongoDB (mongodb+srv://<username>:<password>@<cluster>.mongodb.net/<database>?retryWrites=true&w=majority)
+`DB_USER_PASS` : qui est la clé de connexion à mongoDB (mongodb+srv://"username":"password"@"cluster".mongodb.net/"database"?retryWrites=true&w=majority)
 
 `ACCESS_TOKEN_SECRET` : vous devrez choisir une expression pour le token
 
