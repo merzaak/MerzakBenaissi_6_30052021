@@ -18,11 +18,11 @@ const authManageSauce = async (req, res, next) => {
     })
 
     //on récupère l'userId décodé
-    const UserId = req.body.userIdFromToken 
-    
+    const userId = req.body.userIdFromToken 
+
     //si l'userId de la sauce et l'userId dans le token ne sont 
     //pas les même, on empêche l'exécution la requête
-    if (sauce.userId !== UserId) {
+    if (sauce.userId !== userId) {
         res.status(401)
         return res.send("Vous n'êtes pas autorisés à exécuter cette reqêute")
     }

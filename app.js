@@ -36,7 +36,7 @@ app.use((req, res, next) => {
 //pour transformer le corps de la requête en objet javascript utilisable
 app.use(bodyParser.json())
 
-//ajoute de helmet
+//ajout de helmet
 app.use(helmet())
 
 //middleware pour gérer les images
